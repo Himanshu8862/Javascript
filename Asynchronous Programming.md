@@ -128,7 +128,7 @@ const message = (error, src) => {
 	console.log("Script has loaded : " + src)
 }
 
-loadScript("https://cdnn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js", message)
+loadScript("https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js", message)
 ```
 
 
@@ -410,7 +410,50 @@ weather().then((value) => {
 
 
 ## Error handling
-It is done using try...catch...finally
+```try...catch``` allows us to catch errors so the script can do something instead of halting. 
+
+Syntax:
+```js
+try{
+	// try some code
+}
+catch(err){
+	// error handling , err variable contains error object
+	console.log(err.name, err.message, err.stack)
+}
+```
+
+```try..catch``` works synchronously. But It will not work in scheduled code, like setTimeout().
+Example:
+```js
+try{
+	setTimeout(()=>{
+		// code with error
+	})
+}catch(err){}
+```
+Here the script dies and catch doesn't work beacuse the function itself is executed later, when the engine has already left the try..catch construct	
+
+### Throwing custom error
+The ```throw``` operator generates an error.
+```js
+let error = new Error(message);
+// or
+let error = new SyntaxError(message);
+let error = new ReferenceError(message);
+throw error;
+```
+
+### finally clause
+The ```finally``` clause is often used when we start doing something and want to finalize it in any case of outcome.
+If finally exists it will run in all cases:
+1. after try, if there were no errors
+2. after catchs, if there were errors
+
+If there is a return in try, finally is executed just before the controls return to the outer code.
+
+
+Example:
 ```js
 const loadScript = async (src) => {
 	return new Promise((resolve, reject) => {
@@ -420,7 +463,7 @@ const loadScript = async (src) => {
 			resolve("Script ready : " + src)
 		}
 		script.onerror = () => {
-			reject("Script has some error")
+			reject(new Error("Script has some error"))
 		}
 		document.body.appendChild(script)
 	})
@@ -430,8 +473,8 @@ const main1 = async () => {
 		let a = await loadScript("https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js")
 		console.log(a)
 	}
-	catch(error){
-		console.log(error)
+	catch(err){
+		console.log(err)
 	}
 	finally{
 		console.log("done")
